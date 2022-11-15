@@ -1,10 +1,11 @@
-<script>
+<script>1
+  import {fade} from "svelte/transition";
   import Layout from "./components/Layout.svelte";
   import PokeGrid from "./components/PokeGrid.svelte";
-  import PokeDetails from "./components/PokeDetails.svelte";
-  import {onMount} from "svelte";
+import {onMount, tick} from "svelte";
   import {pokeApi} from "./utils/constants";
   import {fetchPokemonsInfo, setCssClasses} from "./utils/util";
+  import PokeDetails from "./components/PokeDetails.svelte";
 
   let pokemons = [];
   let selectedPokemonId = null;
@@ -13,32 +14,34 @@
     const response = await fetch(pokeApi);
     const data = await response.json();
     const pokemonInfo = fetchPokemonsInfo(data.results);
-    console.log(pokemonInfo)
     pokemons = pokemonInfo;
   });
 
   const handleCardClicked = (id) => {
-    console.log('cardClicked, ', id);
     if (selectedPokemonId === id) return;
     selectedPokemonId = id;
-    console.log({selectedPokemonId, id})
     setCssClasses();
+  }
+
+  function handleShowDetails(id) {
+    selectedPokemonId = id.detail;
   }
 
 </script>
 
-<main class="app">
+<main class="app" in:fade>
   <Layout>
     {#if pokemons.length > 0 }
-      <PokeGrid pokemons={pokemons} handleCardClicked={handleCardClicked}/>
+      <PokeGrid pokemons={pokemons} handleCardClicked={handleCardClicked} on:showDetails={handleShowDetails}/>
     {/if}
-    {#if selectedPokemonId !== null}
-      <PokeDetails/>
-    {/if}
-    <!--{#each pokemons as pokemon (pokemon)}-->
-    <!--  <h3>{pokemon.name}</h3>-->
-    <!--{/each}-->
-    <!--<h3>bla</h3>-->
+
+    <!--{#if selectedPokemonId !== null}-->
+    <!--  <PokeDetails selectedPokemonId={selectedPokemonId}/>-->
+    <!--{/if}-->
+
+    {#key selectedPokemonId}
+        <PokeDetails selectedPokemonId={selectedPokemonId}/>
+    {/key}
   </Layout>
 
 </main>

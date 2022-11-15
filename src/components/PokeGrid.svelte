@@ -4,13 +4,14 @@
   export let pokemons;
   export let handleCardClicked;
 
-  console.log('pokemons: ', pokemons);
+  console.log('rerender')
 </script>
 <div class="pokeGrid">
   <ul class='center'>
     {#each pokemons as pokemon, index}
       <li>
         <PokeCard
+            on:showDetails
             pokemon={pokemon}
             handleCardClicked={handleCardClicked}
         />
